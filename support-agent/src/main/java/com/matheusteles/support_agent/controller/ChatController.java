@@ -11,13 +11,13 @@ public class ChatController {
 
     private final ChatClient chatClient;
 
-    public ChatController(ChatClient.Builder chatClientBuilder){
-        this.chatClient = chatClientBuilder.build();
+    public ChatController(ChatClient chatClient){
+        this.chatClient = chatClient;
     }
 
-    @GetMapping("/api/teste-ia")
-    public String getResponse(@RequestParam(defaultValue = "Me diga uma curiosidade sobre Java") String message) {
-        return chatClient.prompt().user(message).call().content();
+    @GetMapping("/chat")
+    public String askAgent(@RequestParam(defaultValue = "Hello, who are you?") String prompt) {
+        return chatClient.prompt().user(prompt).call().content();
     }
     
 }
