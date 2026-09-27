@@ -1,5 +1,10 @@
 package com.matheusteles.support_agent.dto;
 
-public record ChatRequestDTO(String message) {
+import java.util.UUID;
+
+public record ChatRequestDTO(
+    UUID sessionId,
+    String message
+) {
 
 }
