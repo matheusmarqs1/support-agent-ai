@@ -1,23 +1,31 @@
 package com.matheusteles.support_agent.controller;
 
-import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import com.matheusteles.support_agent.dto.ChatRequestDTO;
+import com.matheusteles.support_agent.dto.ChatResponseDTO;
+import com.matheusteles.support_agent.service.ChatService;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
-@RestController 
+@RestController
+@RequestMapping("/api/chat") 
 public class ChatController {
 
-    private final ChatClient chatClient;
+    private final ChatService chatService;
 
-    public ChatController(ChatClient chatClient){
-        this.chatClient = chatClient;
+    public ChatController(ChatService chatService){
+        this.chatService = chatService;
     }
 
-    @GetMapping("/chat")
-    public String askAgent(@RequestParam(defaultValue = "Hello, who are you?") String prompt) {
-        return chatClient.prompt().user(prompt).call().content();
+    @PostMapping
+    public ResponseEntity<ChatResponseDTO> askAgent(@RequestBody ChatRequestDTO request) {
+        ChatResponseDTO response = chatService.processMessage(request);
+        return ResponseEntity.ok(response);
     }
     
 }
