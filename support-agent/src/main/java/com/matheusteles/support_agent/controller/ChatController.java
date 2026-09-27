@@ -7,6 +7,8 @@ import com.matheusteles.support_agent.dto.ChatRequestDTO;
 import com.matheusteles.support_agent.dto.ChatResponseDTO;
 import com.matheusteles.support_agent.service.ChatService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +25,7 @@ public class ChatController {
     }
 
     @PostMapping
-    public ResponseEntity<ChatResponseDTO> askAgent(@RequestBody ChatRequestDTO request) {
+    public ResponseEntity<ChatResponseDTO> askAgent(@Valid @RequestBody ChatRequestDTO request) {
         ChatResponseDTO response = chatService.processMessage(request);
         return ResponseEntity.ok(response);
     }

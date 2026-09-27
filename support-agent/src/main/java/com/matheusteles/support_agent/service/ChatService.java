@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.matheusteles.support_agent.dto.ChatRequestDTO;
 import com.matheusteles.support_agent.dto.ChatResponseDTO;
+import com.matheusteles.support_agent.exception.ChatSessionNotFoundException;
 import com.matheusteles.support_agent.model.ChatMessage;
 import com.matheusteles.support_agent.model.ChatSession;
 import com.matheusteles.support_agent.model.MessageRole;
@@ -27,7 +28,7 @@ public class ChatService {
     public ChatResponseDTO processMessage(ChatRequestDTO request){
         ChatSession session = request.sessionId() != null 
             ? sessionRepository.findById(request.sessionId())
-                .orElseThrow(() -> new RuntimeException("Chat session not found with ID: " + request.sessionId()))
+                .orElseThrow(() -> new ChatSessionNotFoundException("Chat session not found with ID: " + request.sessionId()))
             : ChatSession.builder().build();
         
         ChatMessage userMessage = ChatMessage.builder().role(MessageRole.USER)
