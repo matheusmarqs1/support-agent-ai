@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -39,6 +40,7 @@ public class ChatSession {
     private Instant createdAt;
 
     @OneToMany(mappedBy = "chatSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC")
     @Builder.Default
     private List<ChatMessage> messages = new ArrayList<>();
 
