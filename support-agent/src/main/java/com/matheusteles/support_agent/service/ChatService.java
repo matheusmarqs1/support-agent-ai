@@ -2,22 +2,25 @@ package com.matheusteles.support_agent.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.matheusteles.support_agent.dto.ChatMessageResponseDTO;
 import com.matheusteles.support_agent.dto.ChatRequestDTO;
 import com.matheusteles.support_agent.dto.ChatResponseDTO;
+import com.matheusteles.support_agent.dto.ChatSessionResponseDTO;
+import com.matheusteles.support_agent.dto.ChatSessionSummaryDTO;
 import com.matheusteles.support_agent.exception.ChatSessionNotFoundException;
 import com.matheusteles.support_agent.model.ChatMessage;
 import com.matheusteles.support_agent.model.ChatSession;
 import com.matheusteles.support_agent.model.MessageRole;
 import com.matheusteles.support_agent.repository.ChatSessionRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service 
 public class ChatService {
@@ -72,6 +75,35 @@ public class ChatService {
         ChatSession savedSession = sessionRepository.save(session);
 
         return new ChatResponseDTO(savedSession.getId(), aiResponse);
+        
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatSessionSummaryDTO> getAllSessions(){
+        List<ChatSession> sessions = sessionRepository.findAll();
+        return sessions.stream()
+            .map(session -> new ChatSessionSummaryDTO(session.getId(), session.getTitle(), session.getCreatedAt()))
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ChatSessionResponseDTO getSessionById(UUID sessionId){
+        ChatSession session = sessionRepository.findById(sessionId)
+            .orElseThrow(() -> new ChatSessionNotFoundException("Chat session not found with ID: " + sessionId));
+        
+        return new ChatSessionResponseDTO(
+            session.getId(),
+            session.getTitle(),
+            session.getCreatedAt(),
+            session.getMessages().stream()
+                .map(message -> new ChatMessageResponseDTO(
+                    message.getId(),
+                    message.getRole(),
+                    message.getContent(),
+                    message.getCreatedAt()
+                ))
+                .toList()
+            );
         
     }
 
