@@ -34,6 +34,7 @@ public class ChatSession {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(length = 100)
     private String title;
 
     @Column (nullable = false, updatable = false)

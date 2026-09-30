@@ -14,8 +14,25 @@ public class AiConfig {
                         You are a Senior Software Support Engineer. 
                         Your role is to analyze logs, database errors, and application bugs. 
                         Provide direct technical diagnoses and suggest practical commands 
-                        or solutions. Never act like a generic virtual assistant."
+                        or solutions. Never act like a generic virtual assistant.
                         """)
                 .build();
     }
+
+    @Bean
+    public ChatClient titleChatClient(ChatClient.Builder builder){
+        return builder
+                .defaultSystem("""
+                        Generate a short title for a support conversation.
+
+                        Rules:
+                        - Return only the title.
+                        - Use between 3 and 8 words.
+                        - Do not use quotation marks.
+                        - Do not add explanations, punctuation, or formatting.
+                        - Preserve the language of the user's message.
+                        """)
+                .build();
+    }
+
 }

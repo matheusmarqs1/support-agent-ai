@@ -23,10 +23,12 @@ import jakarta.transaction.Transactional;
 public class ChatService {
 
     private final ChatClient chatClient;
+    private final ChatClient titleChatClient;
     private final ChatSessionRepository sessionRepository;
 
-    public ChatService(ChatClient chatClient, ChatSessionRepository sessionRepository){
+    public ChatService(ChatClient chatClient, ChatClient titleChatClient, ChatSessionRepository sessionRepository){
         this.chatClient = chatClient;
+        this.titleChatClient = titleChatClient;
         this.sessionRepository = sessionRepository;
     }
 
@@ -37,7 +39,13 @@ public class ChatService {
             ? sessionRepository.findById(request.sessionId())
                 .orElseThrow(() -> new ChatSessionNotFoundException("Chat session not found with ID: " + request.sessionId()))
             : ChatSession.builder().build();
-        
+
+        if (session.getTitle() == null || session.getTitle().isBlank()){
+            String title = generateSessionTitle(request.message());
+            session.setTitle(title);
+        }
+
+
         List<Message> savedMessages = new ArrayList<>();
     
         for(ChatMessage message : session.getMessages()){
@@ -67,4 +75,12 @@ public class ChatService {
         
     }
 
+    private String generateSessionTitle(String userMessage){
+        String title =  titleChatClient.prompt().user(userMessage).call().content();
+
+        if(title == null || title.isBlank()){
+            return "Support request";
+        }
+        return title.trim();
+    }
 }
